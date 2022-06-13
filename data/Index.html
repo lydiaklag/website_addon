@@ -12,8 +12,8 @@
     	height: 400px;
       margin: 0 auto;
     }
-    h2 {
-      font-family: New Times Roman;
+    h3 {
+      font-family: Arial;
       font-size: 3.0rem;
       text-align: center;
     }
@@ -26,52 +26,17 @@
 </head>
 <body>
 
-  <h2>ADXL362 Sensor Readings</h2>
-  <div id="chart-temperature" class="container"></div>
-  <div id="chart-humidity" class="container"></div>
-  <div id="chart-pressure" class="container"></div>
+  <h3>ADXL362 Sensor Readings</h3>
+  <div id="chart-Xx" class="container"></div>
+  <div id="chart-Yy" class="container"></div>
+  <div id="chart-Zz" class="container"></div>
+   <h3>MAX30105 Sensor Readings</h3>
+  <div id="chart-HR" class="container"></div>
+  <div id="chart-SPo2" class="container"></div>
 </body>
 <script>
-var chartT = new Highcharts.Chart({
-  chart:{ renderTo : 'chart-temperature' },
-  title: { text: 'ADXL362 Z acceleration Readings' },
-  series: [{
-    showInLegend: false,
-    data: []
-  }],
-  plotOptions: {
-    line: { animation: false,
-      dataLabels: { enabled: true }
-    },
-    series: { color: '#FF0000' }
-  },
-  xAxis: { type: 'datetime',
-    dateTimeLabelFormats: { second: '%H:%M:%S' }
-  },
-  yAxis: {
-    title: { text: 'Z acceleration (m/s2)' }
-  },
-  credits: { enabled: false }
-});
-setInterval(function ( ) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
-          y = parseFloat(this.responseText);
-      if(chartT.series[0].data.length > 40) {
-        chartT.series[0].addPoint([x, y], true, true, true);
-      } else {
-        chartT.series[0].addPoint([x, y], true, false, true);
-      }
-    }
-  };
-  xhttp.open("GET", "/temperature", true);
-  xhttp.send();
-}, 5000 ) ;
-
-var chartH = new Highcharts.Chart({
-  chart:{ renderTo:'chart-humidity' },
+var chartYy = new Highcharts.Chart({
+  chart:{ renderTo:'chart-Yy' },
   title: { text: 'ADXL362 Y acceleration Readings' },
   series: [{
     showInLegend: false,
@@ -97,19 +62,19 @@ setInterval(function ( ) {
     if (this.readyState == 4 && this.status == 200) {
       var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
           y = parseFloat(this.responseText);
-      if(chartH.series[0].data.length > 40) {
-        chartH.series[0].addPoint([x, y], true, true, true);
+      if(chartYy.series[0].data.length > 40) {
+        chartYy.series[0].addPoint([x, y], true, true, true);
       } else {
-        chartH.series[0].addPoint([x, y], true, false, true);
+        chartYy.series[0].addPoint([x, y], true, false, true);
       }
     }
   };
-  xhttp.open("GET", "/humidity", true);
+  xhttp.open("GET", "/Yy", true);
   xhttp.send();
-}, 5000 ) ;
+}, 5500 ) ;
 
-var chartP = new Highcharts.Chart({
-  chart:{ renderTo:'chart-pressure' },
+var chartXx = new Highcharts.Chart({
+  chart:{ renderTo:'chart-Xx' },
   title: { text: 'ADXL362 X acceleration Readings' },
   series: [{
     showInLegend: false,
@@ -136,15 +101,126 @@ setInterval(function ( ) {
     if (this.readyState == 4 && this.status == 200) {
       var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
           y = parseFloat(this.responseText);
-      if(chartP.series[0].data.length > 40) {
-        chartP.series[0].addPoint([x, y], true, true, true);
+      if(chartXx.series[0].data.length > 40) {
+        chartXx.series[0].addPoint([x, y], true, true, true);
       } else {
-        chartP.series[0].addPoint([x, y], true, false, true);
+        chartXx.series[0].addPoint([x, y], true, false, true);
       }
     }
   };
-  xhttp.open("GET", "/pressure", true);
+  xhttp.open("GET", "/Xx", true);
   xhttp.send();
-}, 5000 ) ;
+}, 5500 ) ;
+  var chartZz = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-Zz' },
+  title: { text: 'ADXL362 Z acceleration Readings' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#FF0000' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Z acceleration (m/s2)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartZz.series[0].data.length > 40) {
+        chartZz.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartZz.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/Zz", true);
+  xhttp.send();
+}, 5500 ) ;
+  var chartHR = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-HR' },
+  title: { text: 'HR Measurements' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#FF0000' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Heart Rate (beats/min)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartHR.series[0].data.length > 40) {
+        chartHR.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartHR.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/hr", true);
+  xhttp.send();
+}, 5500 ) ;
+    var chartSPo2 = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-SPo2' },
+  title: { text: 'SpO2 Measurements' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#FF0000' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Oxygen Saturation SpO2 (%)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartSPo2.series[0].data.length > 40) {
+        chartSPo2.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartSPo2.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/SPo2", true);
+  xhttp.send();
+}, 5500 ) ;
 </script>
 </html>
