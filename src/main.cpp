@@ -331,7 +331,7 @@ void ComputeHeartRate()
     if (ma_gr_buffer[j] > ma_gr_buffer[j - 1] && ma_gr_buffer[j] > ma_gr_buffer[j + 1] && ma_gr_buffer[j] > Mean_Magnitude && Peak == 0)
     {
       Peak = ma_gr_buffer[j];
-      Index = j;
+      Index = j*40;
     }
 
     //***Search for next peak
@@ -340,13 +340,13 @@ void ComputeHeartRate()
     {
       if (ma_gr_buffer[j] > ma_gr_buffer[j - 1] && ma_gr_buffer[j] > ma_gr_buffer[j + 1] && ma_gr_buffer[j] > Mean_Magnitude)
       {
-        float d = j - Index;
-        float pulse = (float)samp_freq * 60 / d; // bpm for each PEAK interval
+        float d = (j*40) - Index;
+        float pulse=(float)60000/d; // bpm for each PEAK interval
         PR[p] = pulse;
         p++;
         p %= points_pr; // Wrap variable
         Peak = ma_gr_buffer[j];
-        Index = j;
+        Index = j*40;
       }
     }
   }
@@ -399,8 +399,9 @@ int readSamples()
     // gr_buffer[i] = Sensor.getIR();
     // gr_buffer[i] = Sensor.getRed();
     // if (flag_movement){
-      gr_buffer[i] = Sensor.getGreen(); //if there is movement, then take samples using the green light only
+      // gr_buffer[i] = Sensor.getGreen(); //if there is movement, then take samples using the green light only
     // }
+    gr_buffer[i] = Sensor.getIR();
     // else {
     //   gr_buffer[i] = Sensor.getRed();
     //   // should I also include measurements from IR and then take the mean of both to get the final HR
@@ -429,13 +430,15 @@ void setup(){
   // }
   Sensor.begin();  //for max30105
   byte ledBrightness = 0xDF;                                                             // Options: 0=Off to 255=50mA  --> DF=~44mA
-  byte sampleAverage = 2;                                                                // Options: 1, 2, 4, 8, 16, 32
+  byte sampleAverage = 8;                                                                // Options: 1, 2, 4, 8, 16, 32
   byte ledMode = 3;                                                                      // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
   int sampleRate = 200;                                                                  // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
   int pulseWidth = 411;                                                                  // Options: 69, 118, 215, 411
-  int adcRange = 2048;                                                                   // Options: 2048, 4096, 8192, 16384
+  int adcRange = 16384;                                                                   // Options: 2048, 4096, 8192, 16384
   Sensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); // Configure sensor with these settings
- 
+  Sensor.setPulseAmplitudeRed(0xDF);
+  Sensor.setPulseAmplitudeIR(0xDF); //if the value was 0, here we basically turn off the red LED, so green and IR LEDs are active
+  Sensor.setPulseAmplitudeGreen(0);
 
 
   if(!SPIFFS.begin()){

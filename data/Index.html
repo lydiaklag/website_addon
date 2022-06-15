@@ -6,33 +6,43 @@
 	<script language="javascript" type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
 
   <style>
-    body {
-      min-width: 310px;
-    	max-width: 800px;
-    	height: 400px;
-      margin: 0 auto;
-    }
-    h3 {
-      font-family: Arial;
-      font-size: 3.0rem;
-      text-align: center;
-    }
-	div {
-		height: 100px;
-		width: 500px;
-		background-color: powderblue;
-	}
+    * {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
   </style>
 </head>
 <body>
-
-  <h3>ADXL362 Sensor Readings</h3>
-  <div id="chart-Xx" class="container"></div>
-  <div id="chart-Yy" class="container"></div>
+<div class="row">
+  <div class="column" style="background-color:#bca;">
+    <h3>ADXL362 Sensor Readings</h3>
+    <div id="chart-Xx" class="container"></div>
+    <div id="chart-Yy" class="container"></div>
   <div id="chart-Zz" class="container"></div>
-   <h3>MAX30105 Sensor Readings</h3>
+  </div>
+  <div class="column" style="background-color:#cac;">
+    <h3>MAX30105 Sensor Readings</h3>
   <div id="chart-HR" class="container"></div>
-  <div id="chart-SPo2" class="container"></div>
+  <div id="chart-SPo2" class="container">
+  </div>
+    <div id="chart-accel-all" class="container">
+  </div>
+  
+</div>
+   </div>
 </body>
 <script>
 var chartYy = new Highcharts.Chart({
@@ -52,7 +62,7 @@ var chartYy = new Highcharts.Chart({
     dateTimeLabelFormats: { second: '%H:%M:%S' }
   },
   yAxis: {
-    title: { text: 'Y acceleration (m/s2)' }
+    title: { text: 'Y acceleration (mg)' }
   },
   credits: { enabled: false }
 });
@@ -71,7 +81,7 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/Yy", true);
   xhttp.send();
-}, 5500 ) ;
+}, 2750 ) ;
 
 var chartXx = new Highcharts.Chart({
   chart:{ renderTo:'chart-Xx' },
@@ -91,7 +101,7 @@ var chartXx = new Highcharts.Chart({
     dateTimeLabelFormats: { second: '%H:%M:%S' }
   },
   yAxis: {
-    title: { text: 'X acceleration (m/s2)' }
+    title: { text: 'X acceleration (mg)' }
   },
   credits: { enabled: false }
 });
@@ -110,7 +120,8 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/Xx", true);
   xhttp.send();
-}, 5500 ) ;
+}, 2750 ) ;
+
   var chartZz = new Highcharts.Chart({
   chart:{ renderTo : 'chart-Zz' },
   title: { text: 'ADXL362 Z acceleration Readings' },
@@ -128,7 +139,7 @@ setInterval(function ( ) {
     dateTimeLabelFormats: { second: '%H:%M:%S' }
   },
   yAxis: {
-    title: { text: 'Z acceleration (m/s2)' }
+    title: { text: 'Z acceleration (mg)' }
   },
   credits: { enabled: false }
 });
@@ -147,7 +158,7 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/Zz", true);
   xhttp.send();
-}, 5500 ) ;
+}, 2750 ) ;
   var chartHR = new Highcharts.Chart({
   chart:{ renderTo : 'chart-HR' },
   title: { text: 'HR Measurements' },
@@ -222,5 +233,81 @@ setInterval(function ( ) {
   xhttp.open("GET", "/SPo2", true);
   xhttp.send();
 }, 5500 ) ;
+  
+  var chartAa = new Highcharts.Chart({
+  chart:{ renderTo:'chart-accel-all' },
+  title: { text: 'ADXL362 all acceleration Readings' },
+  series: [{
+    showInLegend: false,
+    data: []
+  },
+  {
+    showInLegend: false,
+    data: []
+  },
+  {
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    }
+  },
+  xAxis: {
+    type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'X,Y,Z acceleration (mg)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartAa.series[0].data.length > 40) {
+        chartAa.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartAa.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/Yy", true);
+  xhttp.send();
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartAa.series[1].data.length > 40) {
+        chartAa.series[1].addPoint([x, y], true, true, true);
+      } else {
+        chartAa.series[1].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/Xx", true);
+  xhttp.send();
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime() + 1000 * 60 * 60 * 3 ,
+          y = parseFloat(this.responseText);
+      if(chartAa.series[2].data.length > 40) {
+        chartAa.series[2].addPoint([x, y], true, true, true);
+      } else {
+        chartAa.series[2].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/Zz", true);
+  xhttp.send();
+}, 2750 ) ;
 </script>
 </html>
